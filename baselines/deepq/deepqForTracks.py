@@ -191,7 +191,7 @@ def learn(env,
                 update_target()
 
         # 测试训练集和测试集
-        if t % 1000 == 0 and save_path is not None:
+        if (t == learning_starts or t % 5000 == 0) and save_path is not None:
             act.save(save_path + 'my_model_{}.pkl'.format(t))
 
         # Change new scenario and output the processed analysis data

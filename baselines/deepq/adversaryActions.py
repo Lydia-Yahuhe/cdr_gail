@@ -78,11 +78,6 @@ class TransitionClassifier(object):
             [self.generator_obs_ph, self.generator_acs_ph, self.expert_obs_ph, self.expert_acs_ph],
             [generator_loss, expert_loss, entropy_loss, self.total_loss, U.flatgrad(self.total_loss, var_list)])
 
-        self.check = U.function(
-            [self.generator_obs_ph, self.generator_acs_ph, self.expert_obs_ph, self.expert_acs_ph],
-            [tf.nn.sigmoid(generator_logits), tf.nn.sigmoid(expert_logits), generator_loss, expert_loss]
-        )
-
     def __build_graph(self, obs_ph, acs_ph, reuse=False, **kwargs):
         with tf.variable_scope(self.scope):
             if reuse:
@@ -129,15 +124,6 @@ class TransitionClassifier(object):
         print('{:>+7.4f}, {:>+7.4f}, {:>4d}, {:>4d}, {}'.format(
             rew, rew_e, ac, ac_e, int((obs_e == obs).all())),
             end=' | ')
-
-        values = self.check(
-            np.expand_dims(obs, 0),
-            np.eye(self.n_action)[ac],
-            np.expand_dims(obs_e, 0),
-            np.eye(self.n_action)[ac_e]
-        )
-        print(['{:>+7.4f}'.format(v[0][0]) for v in values[:2]] + ['{:>+7.4f}'.format(v) for v in values[2:]],
-              end=' | ')
         return rew, rew_e, abs(ac - ac_e)
 
     def get_reward(self, obs, acs):

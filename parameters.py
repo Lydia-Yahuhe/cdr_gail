@@ -1,12 +1,13 @@
 common_params = {
     'lr': 5e-4,
     'batch_size': 32,
-    'total_timesteps': 100000,
+    'total_timesteps': 200000,
     'buffer_size': 10000,
     'learning_starts': 1000,
-    'exploration_fraction': 0.2
+    'exploration_fraction': 0.1
 }
-size = 2000
+size = 3185
+# size = 3451
 ratio = 0.7
 limit_path = './data/names_{}.csv'.format(size)
 expert_path = './data/exp_samples_{}.npz'.format(size)

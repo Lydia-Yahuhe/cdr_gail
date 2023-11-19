@@ -162,7 +162,8 @@ def _analysis(paths, prefixes, labels, start=0, end=10001, delta=1000):
         tmp_train_total, tmp_test_total = [], []
         for path, prefix in zip(paths, prefixes):
             file_name = path + prefix + '_train_{}.npz'.format(step)
-            print(file_name)
+            # print(file_name)
+            print('step: {:>6d}'.format(step), end=', ')
             if not os.path.exists(file_name):
                 continue
             train_data = np.load(path + prefix + '_train_{}.npz'.format(step))
@@ -190,18 +191,23 @@ def _analysis(paths, prefixes, labels, start=0, end=10001, delta=1000):
             tmp_test_kl.append(kl_test)
             tmp_train_ad.append(train_act)
             tmp_test_ad.append(test_act)
+            print('kl: {:>5.3f}, {:>5.3f}'.format(kl_train, kl_test), end=', ')
             # SR
-            tmp_train_sr.append(np.mean(train_data['result']))
-            tmp_test_sr.append(np.mean(test_data['result']))
+            sr_train = np.mean(train_data['result'])
+            sr_test = np.mean(test_data['result'])
+            tmp_train_sr.append(sr_train)
+            tmp_test_sr.append(sr_test)
+            print('sr: {:>5.3f}, {:>5.3f}'.format(sr_train, sr_test), end=', ')
             # ACR, MSE
-            acr, mse = get_acr_mse(train_num, train_act, expert_num, expert_act)
-            tmp_train_acr.append(acr)
-            tmp_train_mse.append(mse)
-            print(step, acr, mse, end=' ')
-            acr, mse = get_acr_mse(test_num, test_act, expert_num, expert_act)
-            tmp_test_acr.append(acr)
-            tmp_test_mse.append(mse)
-            print(acr, mse)
+            acr_train, mse_train = get_acr_mse(train_num, train_act, expert_num, expert_act)
+            tmp_train_acr.append(acr_train)
+            tmp_train_mse.append(mse_train)
+            acr_test, mse_test = get_acr_mse(test_num, test_act, expert_num, expert_act)
+            tmp_test_acr.append(acr_test)
+            tmp_test_mse.append(mse_test)
+            print('acr: {:>5.3f}, {:>5.3f}'.format(acr_train, acr_test), end=', ')
+            print('mse: {:>6.3f}, {:>6.3f}'.format(mse_train, mse_test))
+
         kl_train_lst.append(tmp_train_kl)
         kl_test_lst.append(tmp_test_kl)
         sr_train_lst.append(tmp_train_sr)
@@ -225,8 +231,8 @@ def _analysis(paths, prefixes, labels, start=0, end=10001, delta=1000):
 
 if __name__ == '__main__':
     kwargs = {
-        "start": 50000,
-        "end": 100001,
+        "start": 0,
+        "end": 200001,
         "delta": 5000
     }
 
@@ -237,9 +243,9 @@ if __name__ == '__main__':
     #     **kwargs
     # )
     _analysis(
-        paths=[gail_actions_path, gail_tracks_path],
-        prefixes=['dqn_actions', 'dqn_tracks'],
-        labels=['GAIL+DQN,State-Action', 'GAIL+DQN,State-State'],
+        paths=[gail_actions_path, gail_tracks_path, bc_actions_path],
+        prefixes=['dqn_actions', 'dqn_tracks', 'bc_actions'],
+        labels=['GAIL+DQN,State-Action', 'GAIL+DQN,State-State', 'BC,State-Action'],
         **kwargs
     )
 

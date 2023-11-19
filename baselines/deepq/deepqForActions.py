@@ -174,7 +174,7 @@ def learn(env,
         num = env.scenario.id
         rew, rew_e, delta_ac = reward_giver.compare(int(num), obs, action)
         # Store transition in the replay buffer.
-        replay_buffer.add(int(num), obs, action, rew, new_obs, float(done))
+        replay_buffer.add(int(num), obs, action, rew+true_rew, new_obs, float(done))
         obs = new_obs
         # Collect raw data for analysis
         episode_rewards[-1] += rew

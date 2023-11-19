@@ -2,11 +2,13 @@
 The code is used to train BC imitator, or pretrained GAIL imitator
 """
 import numpy as np
-import tensorflow as tf
 
 from baselines.common import tf_util as U
 from baselines.common.mpi_adam import MpiAdam
 from baselines.a2c.utils import conv, fc, conv_to_fc
+
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 
 class BehaviorClone:

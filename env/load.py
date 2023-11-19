@@ -107,7 +107,7 @@ def load_data_set(host='localhost', db='admin'):
     )
 
 
-def load_and_split_data(host='localhost', db='admin', col='scenarios_gail', size=None, ratio=0.8, limit_path=None):
+def load_and_split_data(host='localhost', db='admin', col='scenarios_gail_small', size=None, ratio=0.8, limit_path=None):
     """
     加载冲突场景，并将其按比例分为训练集和测试集
     """

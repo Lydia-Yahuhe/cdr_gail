@@ -29,7 +29,7 @@ def get_action_list(num, bins_):
 
 
 def main(limit=-1, other_traj=False):
-    train_set, _ = load_and_split_data(col='scenarios_gail', ratio=1.0)
+    train_set, _ = load_and_split_data(col='scenarios_gail_small', ratio=1.0)
 
     count = 0
     info_array, action_array, track_array = [], [], []
@@ -102,4 +102,4 @@ def main(limit=-1, other_traj=False):
 
 
 if __name__ == '__main__':
-    main(2000, other_traj=True)
+    main(4000, other_traj=True)

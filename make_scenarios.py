@@ -28,16 +28,24 @@ from env.utils import pnpoly
 
 shift = 360
 
-vertices = ((109.51666666666667, 31.9),
-            (110.86666666666666, 33.53333333333333),
-            (114.07, 32.125),
-            (115.81333333333333, 32.90833333333333),
-            (115.93333333333334, 30.083333333333332),
-            (114.56666666666666, 29.033333333333335),
-            (113.12, 29.383333333333333),
-            (109.4, 29.516666666666666),
-            (109.51666666666667, 31.9),
-            (109.51666666666667, 31.9))
+vertices = ((114.7, 32.0),
+            (114.67, 31.37),
+            (115.67, 30.45),
+            (115.24, 30.07),
+            (112.7, 30.54),
+            (113.27, 31.05),
+            (113.26, 31.64))
+
+# vertices = ((109.51666666666667, 31.9),
+#             (110.86666666666666, 33.53333333333333),
+#             (114.07, 32.125),
+#             (115.81333333333333, 32.90833333333333),
+#             (115.93333333333334, 30.083333333333332),
+#             (114.56666666666666, 29.033333333333335),
+#             (113.12, 29.383333333333333),
+#             (109.4, 29.516666666666666),
+#             (109.51666666666667, 31.9),
+#             (109.51666666666667, 31.9))
 
 data_set = load_data_set()
 flight_level = {i - 20: i * 300.0 + int(i >= 29) * 200.0 for i in range(20, 41)}  # 6000~12500
@@ -185,7 +193,7 @@ def run_scenario(fpl_list, candi):
 
 
 # Step 7
-def write_in_db(name, conflict_info, fpl_info, col='scenarios_meta'):
+def write_in_db(name, conflict_info, fpl_info, col='scenarios_meta_small'):
     database = pymongo.MongoClient('localhost')['admin']
     collection = database[col]
 
@@ -252,7 +260,7 @@ def make_random_scenario(num_start=0, num_end=10):
     for i in range(num_start, num_end):
         print('No.{}/{}'.format(i+1, num_end))
         print('>>> 随机加载航空器（Step 3)')
-        fpl_list, candi = get_fpl_random(inner_routes[:], interval=10, number=3, max_time=1000)
+        fpl_list, candi = get_fpl_random(inner_routes[:], interval=10, number=1, max_time=1000)
 
         print('>>> 开始运行场景，并进行冲突探测（Step 4和5）')
         conflicts, record, shift_list = run_scenario(fpl_list, candi)
@@ -345,9 +353,9 @@ def run_scenario_1(fpl_list, candi):
 
 
 def split_individual_conflict():
-    train_set, _ = load_and_split_data(col='scenarios_meta', ratio=1.0)
-    count, s_name = 402, 7336
-    for info in train_set[401:]:
+    train_set, _ = load_and_split_data(col='scenarios_meta_small', ratio=1.0)
+    count, s_name = 497, 3628
+    for info in train_set[497:]:
         fpl_list = info['fpl_list']
         shift_list, _ = run_scenario_1(fpl_list=fpl_list, candi=info['candi'])
 
@@ -366,7 +374,7 @@ def split_individual_conflict():
 
         for c in new_conflicts:
             c.printf()
-            write_in_db('{}_{}'.format(count, s_name), [c, ], new_fpl_list, col='scenarios_gail')
+            write_in_db('{}_{}'.format(count, s_name), [c, ], new_fpl_list, col='scenarios_gail_small')
             s_name += 1
         count += 1
 
@@ -375,7 +383,7 @@ def split_individual_conflict():
 # -- Check Episodic Conflict Scenarios --
 # ---------------------------------------
 
-def check_conflict(col='scenarios_gail'):
+def check_conflict(col='scenarios_gail_small'):
     train_set, _ = load_and_split_data(col=col, ratio=1.0)
 
     count = 0
@@ -409,6 +417,7 @@ def check_conflict(col='scenarios_gail'):
 
 
 if __name__ == '__main__':
-    # make_random_scenario(num_start=401, num_end=600)
+    # make_random_scenario(num_start=500, num_end=600)
     split_individual_conflict()
     # check_conflict()
+    pass

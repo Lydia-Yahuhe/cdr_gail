@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import gym
 from gym import spaces
@@ -11,7 +13,11 @@ def read_from_csv(file_name, limit):
     if file_name is None:
         return [{}, None]
 
-    with open('./data/trajectory/{}.csv'.format(file_name), 'r', newline='') as f:
+    load_path = './data/trajectory/{}.csv'.format(file_name)
+    if not os.path.exists(load_path):
+        return [{}, None]
+
+    with open(load_path, 'r', newline='') as f:
         tracks = {}
         for line in f.readlines():
             [time_, fpl_id, *line] = line.strip('\r\n').split(',')
@@ -90,7 +96,7 @@ class ConflictEnv(gym.Env):
         self.train_set, self.test_set = load_and_split_data(size=size, ratio=ratio, limit_path=limit_path)
 
         self.action_space = spaces.Discrete(CmdCount * 2)
-        self.observation_space = spaces.Box(low=-1.0, high=+1.0, shape=(300, 400, 3))
+        self.observation_space = spaces.Box(low=-1.0, high=+1.0, shape=(150, 200, 3))
         print('----------env------------')
         print('|   split ratio: {:<6.2f} |'.format(ratio))
         print('|    train size: {:<6} |'.format(len(self.train_set)))

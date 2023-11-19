@@ -95,7 +95,8 @@ def _analysis(path, prefix, start=0, end=10001, delta=1000):
     steps = list(range(start, end, delta))
     ad_lst = []
     for step in steps:
-        print(path + prefix + '_train_{}.npz'.format(step))
+        # print(path + prefix + '_train_{}.npz'.format(step))
+        print('step: {:>6d}'.format(step), end=', ')
         train_data = np.load(path + prefix + '_train_{}.npz'.format(step))
         test_data = np.load(path + prefix + '_test_{}.npz'.format(step))
         train_num, test_num = train_data['name'], test_data['name']
@@ -107,31 +108,36 @@ def _analysis(path, prefix, start=0, end=10001, delta=1000):
             expert_train_act = expert_act[train_idx]
             expert_test_act = expert_act[test_idx]
 
-        if step in [0, 50000, 100000]:
-            with open('act_{}.csv'.format(step), 'w', newline='') as f:
-                f = csv.writer(f)
-                for row in zip(train_num, train_act, expert_train_act, train_data['result']):
-                    f.writerow(list(row))
-                for row in zip(test_num, test_act, expert_test_act, test_data['result']):
-                    f.writerow(list(row))
+        # if step in [0, 50000, 100000]:
+        #     with open('act_{}.csv'.format(step), 'w', newline='') as f:
+        #         f = csv.writer(f)
+        #         for row in zip(train_num, train_act, expert_train_act, train_data['result']):
+        #             f.writerow(list(row))
+        #         for row in zip(test_num, test_act, expert_test_act, test_data['result']):
+        #             f.writerow(list(row))
+
         # AD
         kl_train = kl_divergence(expert_train_act, train_act)
         kl_train_lst.append(kl_train)
         kl_test = kl_divergence(expert_test_act, test_act)
         kl_test_lst.append(kl_test)
         ad_lst.append([stat(train_act), stat(test_act)])
+        print('kl: {:>5.3f}, {:>5.3f}'.format(kl_train, kl_test), end=', ')
         # SR
-        sr_train_lst.append(np.mean(train_data['result']))
-        sr_test_lst.append(np.mean(test_data['result']))
+        sr_train = np.mean(train_data['result'])
+        sr_train_lst.append(sr_train)
+        sr_test = np.mean(test_data['result'])
+        sr_test_lst.append(sr_test)
+        print('sr: {:>5.3f}, {:>5.3f}'.format(sr_train, sr_test), end=', ')
         # ACR, MSE
-        acr, mse = get_acr_mse(train_num, train_act, expert_num, expert_act)
-        train_acr_list.append(acr)
-        train_mse_list.append(mse)
-        print(step, acr, mse, end=' ')
-        acr, mse = get_acr_mse(test_num, test_act, expert_num, expert_act)
-        test_acr_list.append(acr)
-        test_mse_list.append(mse)
-        print(acr, mse)
+        acr_train, mse_train = get_acr_mse(train_num, train_act, expert_num, expert_act)
+        train_acr_list.append(acr_train)
+        train_mse_list.append(mse_train)
+        acr_test, mse_test = get_acr_mse(test_num, test_act, expert_num, expert_act)
+        test_acr_list.append(acr_test)
+        test_mse_list.append(mse_test)
+        print('acr: {:>5.3f}, {:>5.3f}'.format(acr_train, acr_test), end=', ')
+        print('mse: {:>6.3f}, {:>6.3f}'.format(mse_train, mse_test))
 
     fig, axes = plt.subplots(2, 3)
 
@@ -168,8 +174,8 @@ def _analysis(path, prefix, start=0, end=10001, delta=1000):
 
 if __name__ == '__main__':
     kwargs = {
-        "start": 50000,
-        "end": 100001,
+        "start": 0,
+        "end": 200001,
         "delta": 5000
     }
 
@@ -180,5 +186,5 @@ if __name__ == '__main__':
 
     # _analysis(path=bc_actions_path, prefix='bc_actions', **kwargs)
     # _analysis(path=dqn_no_exp_path, prefix='dqn_no_exp', **kwargs)
-    # _analysis(path=gail_actions_path, prefix='dqn_actions', **kwargs)
+    _analysis(path=gail_actions_path, prefix='dqn_actions', **kwargs)
     # _analysis(path=gail_tracks_path, prefix='dqn_tracks', **kwargs)

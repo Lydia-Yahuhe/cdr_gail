@@ -182,7 +182,7 @@ def learn(env,
                 update_target()
 
         # 测试训练集和测试集
-        if t % 1000 == 0 and save_path is not None:
+        if (t == learning_starts or t % 5000 == 0) and save_path is not None:
             act.save(save_path + 'my_model_{}.pkl'.format(t))
             # env.evaluate(act, save_path=save_path + 'dqn_no_exp_train_{}'.format(t), use_set='train')
             # env.evaluate(act, save_path=save_path + 'dqn_no_exp_test_{}'.format(t), use_set='test')
